@@ -1,0 +1,130 @@
+Resources:
+  # SNS Topic for notifications
+  IAMActivityNotifications:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: IAMActivityNotifications
+
+  # Lambda Execution Role
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                  - iam:ListAccountAliases
+                  - sts:GetCallerIdentity
+                Resource: "*"
+
+  # Lambda Function
+  IAMActivityMonitorFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+
+          def lambda_handler(event, context):
+              sns_client = boto3.client('sns')
+              sts_client = boto3.client('sts')
+              iam_client = boto3.client('iam')
+
+              message = event['Records'][0]['Sns']['Message']
+              event_detail = json.loads(message)['detail']
+              
+              # Get account alias
+              account_id = sts_client.get_caller_identity()["Account"]
+              account_aliases = iam_client.list_account_aliases()['AccountAliases']
+              account_alias = account_aliases[0] if account_aliases else account_id
+              
+              event_name = event_detail['eventName']
+              user_identity = event_detail['userIdentity'].get('userName', 'N/A')
+              event_time = event_detail['eventTime']
+              source_ip = event_detail['sourceIPAddress']
+              user_agent = event_detail['userAgent']
+              request_parameters = json.dumps(event_detail.get('requestParameters', {}), indent=2)
+              error_message = event_detail.get('errorMessage', 'N/A')
+              error_code = event_detail.get('errorCode', 'N/A')
+              
+              formatted_message = f"""
+              **IAM Activity Notification**
+
+              **Event:** {event_name}
+              **Account Alias/Number:** {account_alias}
+              **User:** {user_identity}
+              **Event Time:** {event_time}
+              **Source IP:** {source_ip}
+              **User Agent:** {user_agent}
+              **Request Parameters:** {request_parameters}
+              **Error Message:** {error_message}
+              **Error Code:** {error_code}
+              """
+              
+              subject = f'IAM Activity Notification: {event_name} - {account_alias}'
+              
+              # Publish the formatted message to SNS
+              response = sns_client.publish(
+                  TopicArn='arn:aws:sns:YOUR_REGION:YOUR_ACCOUNT_ID:IAMActivityNotifications',
+                  Message=formatted_message,
+                  Subject=subject
+              )
+              
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps('Message formatted and sent')
+              }
+      Runtime: python3.9
+      Timeout: 60
+      Environment:
+        Variables:
+          SNS_TOPIC_ARN: !Ref IAMActivityNotifications
+
+  # Lambda Permission to Allow EventBridge to Invoke Lambda
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt IAMActivityMonitorFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !Sub arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/YOUR_EVENTBRIDGE_RULE_NAME
+
+  # EventBridge Rule to Capture IAM Activities
+  IAMActivityRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: IAMActivityRule
+      EventPattern:
+        source:
+          - "aws.iam"
+        detail-type:
+          - "AWS API Call via CloudTrail"
+        detail:
+          eventSource:
+            - "iam.amazonaws.com"
+          eventName:
+            - "CreateUser"
+            - "DeleteUser"
+            - "CreateRole"
+            - "DeleteRole"
+            - "AttachRolePolicy"
+            - "DetachRolePolicy"
+      Targets:
+        - Arn: !GetAtt IAMActivityMonitorFunction.Arn
+          Id: "IAMActivityMonitorFunctionTarget"
