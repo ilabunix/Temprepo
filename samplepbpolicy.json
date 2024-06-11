@@ -1,0 +1,81 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "LimitIAMActions",
+            "Effect": "Deny",
+            "Action": [
+                "iam:CreateUser",
+                "iam:CreateRole",
+                "iam:DeleteRole",
+                "iam:DeleteUser",
+                "iam:UpdateAssumeRolePolicy",
+                "iam:PutRolePolicy",
+                "iam:PutUserPolicy",
+                "iam:AttachRolePolicy",
+                "iam:AttachUserPolicy",
+                "iam:DetachRolePolicy",
+                "iam:DetachUserPolicy",
+                "iam:DeleteRolePolicy",
+                "iam:DeleteUserPolicy",
+                "iam:CreatePolicy",
+                "iam:DeletePolicy",
+                "iam:UpdatePolicy",
+                "iam:CreateInstanceProfile",
+                "iam:DeleteInstanceProfile",
+                "iam:AddRoleToInstanceProfile",
+                "iam:RemoveRoleFromInstanceProfile"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "DenyAdminPolicyAttachment",
+            "Effect": "Deny",
+            "Action": [
+                "iam:AttachUserPolicy",
+                "iam:AttachRolePolicy"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "ArnLike": {
+                    "iam:PolicyArn": [
+                        "arn:aws:iam::*:policy/AdministratorAccess",
+                        "arn:aws:iam::*:policy/PowerUserAccess",
+                        "arn:aws:iam::*:policy/*FullAccess*"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "EnforcePermissionBoundaryOnRoleCreation",
+            "Effect": "Deny",
+            "Action": "iam:CreateRole",
+            "Resource": "*",
+            "Condition": {
+                "StringNotEquals": {
+                    "iam:PermissionsBoundary": "arn:aws:iam::<account-id>:policy/<YourPermissionsBoundaryPolicy>"
+                }
+            }
+        },
+        {
+            "Sid": "EnforcePermissionBoundaryOnUserCreation",
+            "Effect": "Deny",
+            "Action": "iam:CreateUser",
+            "Resource": "*",
+            "Condition": {
+                "StringNotEquals": {
+                    "iam:PermissionsBoundary": "arn:aws:iam::<account-id>:policy/<YourPermissionsBoundaryPolicy>"
+                }
+            }
+        },
+        {
+            "Sid": "DenyRemovingPermissionBoundary",
+            "Effect": "Deny",
+            "Action": [
+                "iam:DeleteRolePermissionsBoundary",
+                "iam:DeleteUserPermissionsBoundary"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
