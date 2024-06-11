@@ -1,0 +1,94 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DenyDestructiveIAMActions",
+            "Effect": "Deny",
+            "Action": [
+                "iam:DeleteRole",
+                "iam:DeleteRolePolicy",
+                "iam:DeleteUser",
+                "iam:DeleteUserPolicy",
+                "iam:DeletePolicy",
+                "iam:UpdateAssumeRolePolicy",
+                "iam:PutRolePolicy",
+                "iam:CreatePolicy",
+                "iam:DeletePolicy",
+                "iam:PutRolePermissionsBoundary",
+                "iam:DeleteRolePermissionsBoundary",
+                "iam:PassRole",
+                "iam:AttachRolePolicy",
+                "iam:AttachUserPolicy",
+                "iam:AttachGroupPolicy"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "DenyDestructiveRDSActions",
+            "Effect": "Deny",
+            "Action": [
+                "rds:DeleteDBInstance",
+                "rds:DeleteDBCluster"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "DenyDestructiveCloudFrontActions",
+            "Effect": "Deny",
+            "Action": [
+                "cloudfront:DeleteDistribution"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "DenyDestructiveWAFActions",
+            "Effect": "Deny",
+            "Action": [
+                "waf:DeleteWebACL"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "DenyDestructiveVPCActions",
+            "Effect": "Deny",
+            "Action": [
+                "ec2:DeleteVpc",
+                "ec2:DeleteSubnet",
+                "ec2:DeleteRoute",
+                "ec2:DeleteRouteTable"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "DenyDestructiveRoute53Actions",
+            "Effect": "Deny",
+            "Action": [
+                "route53:DeleteHostedZone",
+                "route53:ChangeResourceRecordSets",
+                "route53:DeleteHealthCheck",
+                "route53:UpdateHealthCheck"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "DenyAdminPolicies",
+            "Effect": "Deny",
+            "Action": [
+                "iam:AttachRolePolicy",
+                "iam:AttachUserPolicy",
+                "iam:AttachGroupPolicy"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "ArnLike": {
+                    "iam:PolicyArn": [
+                        "arn:aws:iam::*:policy/AdministratorAccess",
+                        "arn:aws:iam::*:policy/PowerUserAccess",
+                        "arn:aws:iam::*:policy/*FullAccess",
+                        "arn:aws:iam::*:policy/*AdminAccess"
+                    ]
+                }
+            }
+        }
+    ]
+}
