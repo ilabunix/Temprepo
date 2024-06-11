@@ -1,0 +1,102 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  CloudFormation template to deploy a Lambda function that automatically
+  attaches a permissions boundary to newly created IAM roles.
+
+Parameters:
+  PermissionsBoundaryArn:
+    Type: String
+    Description: ARN of the permissions boundary policy to attach to new IAM roles.
+
+Resources:
+  # Lambda Execution Role
+  LambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecutionPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:PutRolePermissionsBoundary
+                Resource: 'arn:aws:iam::*:role/*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+
+  # Lambda Function
+  AttachPermissionsBoundaryLambda:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: python3.9
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+
+          iam_client = boto3.client('iam')
+
+          def lambda_handler(event, context):
+              for record in event['Records']:
+                  if record['eventName'] == 'CreateRole':
+                      role_name = record['responseElements']['role']['roleName']
+                      attach_permissions_boundary(role_name)
+
+          def attach_permissions_boundary(role_name):
+              try:
+                  iam_client.put_role_permissions_boundary(
+                      RoleName=role_name,
+                      PermissionsBoundary='arn:aws:iam::' + context.invoked_function_arn.split(":")[4] + ':policy/' + os.environ['PERMISSIONS_BOUNDARY_ARN']
+                  )
+                  print(f"Permissions boundary attached to role {role_name}")
+              except Exception as e:
+                  print(f"Error attaching permissions boundary to role {role_name}: {str(e)}")
+      Environment:
+        Variables:
+          PERMISSIONS_BOUNDARY_ARN: !Ref PermissionsBoundaryArn
+
+  # CloudWatch Events Rule
+  CloudWatchEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      EventPattern:
+        source:
+          - aws.iam
+        detail-type:
+          - AWS API Call via CloudTrail
+        detail:
+          eventSource:
+            - iam.amazonaws.com
+          eventName:
+            - CreateRole
+      Targets:
+        - Arn: !GetAtt AttachPermissionsBoundaryLambda.Arn
+          Id: AttachPermissionsBoundaryTarget
+
+  # Lambda Permission to Allow CloudWatch Events to Invoke Lambda
+  LambdaInvokePermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !Ref AttachPermissionsBoundaryLambda
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt CloudWatchEventRule.Arn
+
+Outputs:
+  LambdaFunctionArn:
+    Description: ARN of the Lambda function that attaches the permissions boundary.
+    Value: !GetAtt AttachPermissionsBoundaryLambda.Arn
