@@ -1,0 +1,34 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyDestructiveWafActions",
+      "Effect": "Deny",
+      "Action": [
+        "waf:DeleteWebACL",
+        "waf:DeleteRule",
+        "waf:DeleteIPSet",
+        "waf:DeleteByteMatchSet",
+        "waf:DeleteSqlInjectionMatchSet",
+        "waf:DeleteXssMatchSet",
+        "waf:DeleteSizeConstraintSet",
+        "waf:DeleteGeoMatchSet",
+        "waf:DeleteRegexMatchSet",
+        "waf:DeleteRegexPatternSet",
+        "waf:DeleteRateBasedRule",
+        "waf-regional:DeleteWebACL",
+        "waf-regional:DeleteRule",
+        "waf-regional:DeleteIPSet",
+        "waf-regional:DeleteByteMatchSet",
+        "waf-regional:DeleteSqlInjectionMatchSet",
+        "waf-regional:DeleteXssMatchSet",
+        "waf-regional:DeleteSizeConstraintSet",
+        "waf-regional:DeleteGeoMatchSet",
+        "waf-regional:DeleteRegexMatchSet",
+        "waf-regional:DeleteRegexPatternSet",
+        "waf-regional:DeleteRateBasedRule"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
