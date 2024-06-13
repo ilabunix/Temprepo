@@ -1,0 +1,195 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  CloudFormation template to deploy a solution that monitors ACM certificate expirations and sends notifications via SNS.
+
+Parameters:
+  Region:
+    Type: String
+    Description: "The AWS region where the resources are deployed."
+    Default: !Ref "AWS::Region"
+
+  AccountID:
+    Type: String
+    Description: "The AWS account ID."
+
+  EventBridgeRuleName:
+    Type: String
+    Description: "The name of the EventBridge rule."
+    Default: "ACMCertExpiryRule"
+
+  EmailAddress:
+    Type: String
+    Description: "The email address to receive notifications."
+
+Resources:
+  # SNS Topic for notifications
+  ACMCertExpiryNotifications:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: ACMCertExpiryNotifications
+      Tags:
+        - Key: Environment
+          Value: Production
+        - Key: Project
+          Value: ACMCertExpiryMonitor
+
+  # SNS Subscription
+  ACMCertExpiryNotificationsSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref ACMCertExpiryNotifications
+      Protocol: email
+      Endpoint: !Ref EmailAddress
+      Tags:
+        - Key: Environment
+          Value: Production
+        - Key: Project
+          Value: ACMCertExpiryMonitor
+
+  # Lambda Execution Role
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                  - acm:ListCertificates
+                  - acm:DescribeCertificate
+                  - sts:GetCallerIdentity
+                  - iam:ListAccountAliases
+                Resource: "*"
+      Tags:
+        - Key: Environment
+          Value: Production
+        - Key: Project
+          Value: ACMCertExpiryMonitor
+
+  # Lambda Function
+  ACMCertExpiryMonitorFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          from datetime import datetime, timezone, timedelta
+
+          def lambda_handler(event, context):
+              acm_client = boto3.client('acm')
+              sns_client = boto3.client('sns')
+              sts_client = boto3.client('sts')
+              iam_client = boto3.client('iam')
+              
+              # Get account alias
+              account_id = sts_client.get_caller_identity()["Account"]
+              account_aliases = iam_client.list_account_aliases()['AccountAliases']
+              account_alias = account_aliases[0] if account_aliases else account_id
+              
+              # Define the time intervals for notifications
+              notification_days = [60, 45, 30, 15, 7, 1]
+              current_time = datetime.now(timezone.utc)
+              
+              # Fetch the list of ACM certificates
+              paginator = acm_client.get_paginator('list_certificates')
+              certificates = []
+              for page in paginator.paginate(CertificateStatuses=['ISSUED']):
+                  certificates.extend(page['CertificateSummaryList'])
+              
+              expiring_certificates = []
+              
+              for cert in certificates:
+                  cert_details = acm_client.describe_certificate(CertificateArn=cert['CertificateArn'])
+                  not_after = cert_details['Certificate']['NotAfter']
+                  
+                  # Calculate the days until expiration
+                  days_until_expiry = (not_after - current_time).days
+                  
+                  if days_until_expiry in notification_days:
+                      expiring_certificates.append({
+                          'DomainName': cert['DomainName'],
+                          'CertificateArn': cert['CertificateArn'],
+                          'NotAfter': not_after.strftime('%Y-%m-%d'),
+                          'DaysUntilExpiry': days_until_expiry
+                      })
+              
+              if expiring_certificates:
+                  formatted_message = "The following ACM certificates are expiring soon:\n\n"
+                  for cert in expiring_certificates:
+                      formatted_message += (
+                          f"Domain Name: {cert['DomainName']}\n"
+                          f"Certificate ARN: {cert['CertificateArn']}\n"
+                          f"Expiration Date: {cert['NotAfter']}\n"
+                          f"Days Until Expiry: {cert['DaysUntilExpiry']}\n\n"
+                      )
+                  
+                  subject = f"ACM Certificates Expiry Notification - {account_alias}"
+                  
+                  response = sns_client.publish(
+                      TopicArn=os.environ['SNS_TOPIC_ARN'],
+                      Message=formatted_message,
+                      Subject=subject
+                  )
+              
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps('Notification sent')
+      Runtime: python3.11
+      Timeout: 60
+      Environment:
+        Variables:
+          SNS_TOPIC_ARN: !Ref ACMCertExpiryNotifications
+      Tags:
+        - Key: Environment
+          Value: Production
+        - Key: Project
+          Value: ACMCertExpiryMonitor
+
+  # Lambda Permission to Allow EventBridge to Invoke Lambda
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt ACMCertExpiryMonitorFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !Sub arn:aws:events:${Region}:${AccountID}:rule/${EventBridgeRuleName}
+      Tags:
+        - Key: Environment
+          Value: Production
+        - Key: Project
+          Value: ACMCertExpiryMonitor
+
+  # EventBridge Rule to Trigger Lambda Function Daily
+  ACMCertExpiryRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Ref EventBridgeRuleName
+      ScheduleExpression: rate(1 day)
+      Targets:
+        - Arn: !GetAtt ACMCertExpiryMonitorFunction.Arn
+          Id: "ACMCertExpiryMonitorFunctionTarget"
+      Tags:
+        - Key: Environment
+          Value: Production
+        - Key: Project
+          Value: ACMCertExpiryMonitor
+
+Outputs:
+  SNSSubscriptionConfirmation:
+    Description: "SNS Subscription Confirmation"
+    Value: "Check your email and confirm the subscription to start receiving notifications."
