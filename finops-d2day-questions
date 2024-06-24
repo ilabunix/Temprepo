@@ -1,0 +1,59 @@
+Certainly! Here are some advanced-level technical questions focusing on troubleshooting and scenario-based challenges for a Senior Cloud Engineer, specifically related to FinOps and day-to-day administration:
+
+### FinOps Technical Questions:
+
+1. **Scenario:** Your company's AWS cost has suddenly increased by 30% month-over-month. You need to identify the cause.
+   - **Question:** How would you use AWS Cost Explorer and AWS CloudTrail to pinpoint the exact cause of this cost spike?
+   - **Possible Answer:**
+     - Use AWS Cost Explorer to analyze cost trends and identify which services have increased in cost.
+     - Drill down by service, region, and usage type to narrow down the specific areas of increased spending.
+     - Use AWS CloudTrail to correlate the identified cost spikes with specific API calls or changes in resource configurations.
+     - Look for unexpected changes in the provisioning of resources, such as a sudden increase in EC2 instance launches or data transfer volumes.
+
+2. **Scenario:** You need to optimize the cost of your EC2 instances running in production.
+   - **Question:** How would you use AWS Compute Optimizer and AWS Trusted Advisor to recommend and implement cost-saving measures?
+   - **Possible Answer:**
+     - Use AWS Compute Optimizer to analyze the usage patterns of your EC2 instances and receive recommendations for instance types that provide better cost-efficiency based on performance.
+     - Implement right-sizing recommendations provided by AWS Compute Optimizer to switch to smaller or burstable instance types where appropriate.
+     - Use AWS Trusted Advisor to check for underutilized instances, idle load balancers, and unused Elastic IPs.
+     - Terminate or resize underutilized instances and clean up any unused resources.
+
+3. **Scenario:** You need to allocate costs accurately across different departments in your organization.
+   - **Question:** How would you set up and use AWS Organizations and cost allocation tags to achieve accurate cost allocation?
+   - **Possible Answer:**
+     - Use AWS Organizations to create separate AWS accounts for each department, enabling isolated billing and cost tracking.
+     - Implement a tagging strategy and apply cost allocation tags to all resources, including EC2 instances, RDS databases, S3 buckets, and more.
+     - Use the AWS Billing and Cost Management console to enable cost allocation tags and generate detailed cost reports segmented by tags.
+     - Analyze the cost reports to ensure accurate cost distribution and make adjustments to tags and resource usage as needed.
+
+### Day-to-Day Administration Technical Questions:
+
+1. **Scenario:** An application running on EC2 instances is experiencing intermittent downtime.
+   - **Question:** How would you troubleshoot and resolve this issue using CloudWatch Logs and EC2 instance metrics?
+   - **Possible Answer:**
+     - Start by checking CloudWatch Logs for any error messages or unusual log entries during the downtime periods.
+     - Review EC2 instance metrics such as CPU utilization, memory usage, disk I/O, and network traffic in CloudWatch.
+     - Identify any resource bottlenecks or spikes that could correlate with the downtime.
+     - Check for system-level issues using the EC2 instance system logs (e.g., `/var/log/messages` or `/var/log/syslog`).
+     - Consider setting up CloudWatch Alarms to proactively monitor critical metrics and receive alerts for any abnormal behavior.
+     - If necessary, implement auto-scaling to handle traffic spikes and ensure high availability.
+
+2. **Scenario:** You need to ensure that your AWS infrastructure complies with company security policies.
+   - **Question:** How would you use AWS Config and AWS Systems Manager to enforce compliance and remediate non-compliant resources?
+   - **Possible Answer:**
+     - Use AWS Config to create rules that check for compliance with security policies (e.g., encryption at rest, specific IAM policies, etc.).
+     - Set up AWS Config rules to continuously monitor your resources and detect non-compliant configurations.
+     - Use AWS Systems Manager to automate the remediation of non-compliant resources (e.g., patching EC2 instances, updating security groups).
+     - Implement AWS Config conformance packs to group related rules and apply them across your environment for streamlined compliance management.
+
+3. **Scenario:** A critical EC2 instance has become unresponsive, and you need to investigate and recover it.
+   - **Question:** What steps would you take to diagnose and restore the instance using AWS Console and CLI tools?
+   - **Possible Answer:**
+     - Check the instance's system status checks and instance status checks in the AWS Console to determine the nature of the issue.
+     - Use AWS Systems Manager Session Manager to connect to the instance if you have previously installed the SSM Agent and configured the necessary IAM permissions.
+     - If unable to connect via Session Manager, use the AWS CLI to stop the instance, detach its root volume, and attach it to another healthy instance for investigation.
+     - Review and correct any issues with the file system, system configuration, or installed applications.
+     - Reattach the volume to the original instance, start the instance, and verify that it is functioning correctly.
+     - Implement monitoring and alerting to detect and respond to similar issues more quickly in the future.
+
+These questions are designed to challenge candidates and assess their ability to handle complex, real-world scenarios in cloud operations, FinOps, and administration.
