@@ -1,0 +1,72 @@
+Certainly! Here are some advanced-level, real-time troubleshooting technical questions for a Senior Cloud Engineer:
+
+### Real-Time Troubleshooting Technical Questions:
+
+1. **Scenario:** Your web application running on AWS ECS (Elastic Container Service) is experiencing intermittent failures and increased response times.
+   - **Question:** How would you diagnose and troubleshoot the root cause of these intermittent failures?
+   - **Possible Answer:**
+     - **Diagnose:**
+       - Check CloudWatch Logs for the ECS service and the individual container logs for error messages or exceptions.
+       - Use CloudWatch Metrics to monitor CPU, memory, and network utilization of ECS tasks.
+       - Investigate ECS service events for any scaling activities or task failures.
+       - Verify if there are any recent changes to the ECS task definition or service configuration that could have introduced issues.
+     - **Troubleshoot:**
+       - Ensure the ECS service has sufficient resources and adjust the task definition resource limits if needed.
+       - Investigate the underlying EC2 instances in the ECS cluster for performance bottlenecks.
+       - Check the load balancer (e.g., ALB or NLB) for any increased latency or errors.
+       - Review the network configuration to ensure there are no connectivity issues.
+
+2. **Scenario:** An EC2 instance hosting a critical application has suddenly become unreachable via SSH.
+   - **Question:** What steps would you take to troubleshoot and regain access to the instance?
+   - **Possible Answer:**
+     - **Initial Steps:**
+       - Check the instance status checks and system status checks in the AWS Management Console.
+       - Verify the security group and network ACL configurations to ensure SSH access is allowed.
+       - Use AWS Systems Manager Session Manager to attempt connecting to the instance if the SSM Agent is installed.
+     - **Further Troubleshooting:**
+       - If Session Manager is not an option, stop the instance and detach its root volume.
+       - Attach the root volume to another EC2 instance to inspect and repair any potential file system issues.
+       - Check system logs (`/var/log/messages` or `/var/log/syslog`) and SSH configuration (`/etc/ssh/sshd_config`) for any misconfigurations or errors.
+       - Reattach the root volume to the original instance and start the instance.
+       - Implement monitoring and alerts to detect SSH access issues in the future.
+
+3. **Scenario:** A deployment in AWS CodePipeline has failed, causing downtime for a production application.
+   - **Question:** How would you identify and resolve the issue to restore service as quickly as possible?
+   - **Possible Answer:**
+     - **Identify:**
+       - Review the CodePipeline execution history to pinpoint the stage and step where the failure occurred.
+       - Check the detailed logs for the failed action (e.g., CodeBuild logs, CloudFormation stack events).
+       - Investigate any error messages or stack traces provided in the logs.
+     - **Resolve:**
+       - If the failure is due to a code issue, rollback to the previous stable deployment.
+       - For infrastructure-related failures, review the CloudFormation stack or infrastructure as code templates for misconfigurations.
+       - Address any IAM permission issues or missing resources that could be causing the deployment to fail.
+       - Rerun the pipeline after resolving the issue and monitor closely for any further failures.
+
+4. **Scenario:** Your S3 bucket, which stores critical data, is experiencing unusually high request rates and increasing costs.
+   - **Question:** How would you investigate and mitigate the high request rates and associated costs?
+   - **Possible Answer:**
+     - **Investigate:**
+       - Use S3 Server Access Logs to analyze the request patterns and identify the source of the high request rates.
+       - Check AWS CloudTrail logs for any unusual activities or access patterns.
+       - Verify if there are any misconfigured applications or third-party services causing excessive requests.
+     - **Mitigate:**
+       - Implement request rate limiting and throttling mechanisms at the application level.
+       - Set up CloudFront as a CDN in front of the S3 bucket to cache frequently accessed objects and reduce direct S3 access.
+       - Use S3 Lifecycle Policies to transition infrequently accessed data to cheaper storage classes.
+       - Review and optimize S3 bucket policies and IAM roles to restrict unnecessary access.
+
+5. **Scenario:** A database hosted on Amazon RDS is experiencing slow query performance, affecting application responsiveness.
+   - **Question:** What steps would you take to diagnose and improve the query performance?
+   - **Possible Answer:**
+     - **Diagnose:**
+       - Use Amazon RDS Performance Insights to identify slow-running queries and analyze database load.
+       - Check CloudWatch Metrics for the RDS instance to monitor CPU, memory, and I/O utilization.
+       - Review the RDS instance logs for any error messages or warnings related to query performance.
+     - **Improve:**
+       - Optimize slow-running queries by analyzing query execution plans and adding indexes where necessary.
+       - Adjust the RDS instance class to a higher performance tier if the current instance is under-provisioned.
+       - Use read replicas to offload read-heavy traffic and improve overall performance.
+       - Implement caching mechanisms (e.g., ElastiCache) to reduce the load on the RDS instance.
+
+These questions are designed to assess a candidate's ability to troubleshoot complex, real-world issues in cloud environments, focusing on their problem-solving skills, technical expertise, and familiarity with AWS services and tools.
