@@ -17,20 +17,21 @@ def lambda_handler(event, context):
         account_aliases = iam_client.list_account_aliases()['AccountAliases']
         account_alias = account_aliases[0] if account_aliases else account_id
 
-        # Define a list of users to ignore
+        # Define a list of usernames to ignore
         exclude_list = ['UserToExclude1', 'ServiceAccount', 'AutomationScript']
 
         # Extract event details
         event_detail = event.get('detail', {})
         event_name = event_detail.get('eventName')
-        user_identity = event_detail.get('userIdentity', {}).get('userName', 'N/A')
+        user_identity = event_detail.get('userIdentity', {})
+        user_name = user_identity.get('userName', 'N/A')
 
-        # Check if the event should be ignored
-        if user_identity in exclude_list:
-            logger.info(f"Event by user {user_identity} is excluded from notifications.")
+        # Check if the event should be ignored based on UserName
+        if user_name in exclude_list:
+            logger.info(f"Event by user {user_name} is excluded from notifications.")
             return {
                 'statusCode': 200,
-                'body': json.dumps(f"Event by user {user_identity} excluded.")
+                'body': json.dumps(f"Event by user {user_name} excluded.")
             }
 
         event_time = event_detail.get('eventTime')
@@ -41,7 +42,7 @@ def lambda_handler(event, context):
         error_code = event_detail.get('errorCode', 'N/A')
 
         # Prepare the message
-        message = (f"Event: {event_name}\nUser: {user_identity}\nTime: {event_time}\nIP: {source_ip}\n"
+        message = (f"Event: {event_name}\nUser: {user_name}\nTime: {event_time}\nIP: {source_ip}\n"
                    f"User Agent: {userAgent}\nRequest Parameters: {request_parameters}\n"
                    f"Error Message: {error_message}\nError Code: {error_code}")
         subject = f"IAM Activity Detected in {account_alias}"
