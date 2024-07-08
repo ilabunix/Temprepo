@@ -1,0 +1,23 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Deny",
+      "Action": [
+        "guardduty:DisableOrganizationAdminAccount",
+        "guardduty:DisassociateFromMasterAccount",
+        "guardduty:DeleteDetector"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Deny",
+      "Action": [
+        "securityhub:DisableOrganizationAdminAccount",
+        "securityhub:DisassociateFromMasterAccount",
+        "securityhub:DisableSecurityHub"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
