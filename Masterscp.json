@@ -1,0 +1,49 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyIAMUserManagement",
+      "Effect": "Deny",
+      "Action": [
+        "iam:CreateUser",
+        "iam:DeleteUser",
+        "iam:UpdateUser"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "PreventDeletionOfVPCFlowLogs",
+      "Effect": "Deny",
+      "Action": [
+        "ec2:DeleteFlowLogs"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "PreventDisablingAWSConfigOrModifyConfiguration",
+      "Effect": "Deny",
+      "Action": [
+        "config:DeleteConfigurationRecorder",
+        "config:StopConfigurationRecorder",
+        "config:DeleteDeliveryChannel",
+        "config:PutConfigurationRecorder",
+        "config:PutDeliveryChannel",
+        "config:PutConfigurationAggregator"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "EnforceIMDSv2",
+      "Effect": "Deny",
+      "Action": [
+        "ec2:ModifyInstanceMetadataOptions"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringNotEquals": {
+          "ec2:MetadataHttpTokens": "required"
+        }
+      }
+    }
+  ]
+}
