@@ -1,0 +1,485 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_CLOUDWATCH",
+      "label": "CloudWatch",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "cloudwatch",
+      "pluginName": "CloudWatch"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "datasource",
+      "id": "cloudwatch",
+      "name": "CloudWatch",
+      "version": "1.0.0"
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "6.6.0-pre"
+    },
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Visualize Amazon EC2 metrics with CloudWatch",
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1611675265796,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "datasource": "$datasource",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 14,
+      "panels": [],
+      "title": "Overview",
+      "type": "row"
+    },
+    {
+      "datasource": "$datasource",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 1
+      },
+      "id": 2,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "defaults": {
+            "max": 100,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 60
+                },
+                {
+                  "color": "red",
+                  "value": 90
+                }
+              ]
+            },
+            "unit": "percent"
+          },
+          "mappings": [],
+          "overrides": []
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "targets": [
+        {
+          "dimensions": {
+            "InstanceId": "*"
+          },
+          "namespace": "AWS/EC2",
+          "metricName": "CPUUtilization",
+          "region": "$region",
+          "statistics": [
+            "Average"
+          ],
+          "refId": "A",
+          "period": "$period"
+        }
+      ],
+      "title": "CPU Utilization",
+      "type": "gauge"
+    },
+    {
+      "datasource": "$datasource",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 1
+      },
+      "id": 3,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "defaults": {
+            "max": 100,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 60
+                },
+                {
+                  "color": "red",
+                  "value": 90
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "mappings": [],
+          "overrides": []
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "targets": [
+        {
+          "dimensions": {
+            "InstanceId": "*"
+          },
+          "namespace": "AWS/EC2",
+          "metricName": "MemoryUtilization",
+          "region": "$region",
+          "statistics": [
+            "Average"
+          ],
+          "refId": "B",
+          "period": "$period"
+        }
+      ],
+      "title": "Memory Utilization",
+      "type": "gauge"
+    },
+    {
+      "datasource": "$datasource",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 1
+      },
+      "id": 4,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "defaults": {
+            "max": 1000,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 600
+                },
+                {
+                  "color": "red",
+                  "value": 900
+                }
+              ]
+            },
+            "unit": "bps"
+          },
+          "mappings": [],
+          "overrides": []
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "targets": [
+        {
+          "dimensions": {
+            "InstanceId": "*"
+          },
+          "namespace": "AWS/EC2",
+          "metricName": "NetworkIn",
+          "region": "$region",
+          "statistics": [
+            "Average"
+          ],
+          "refId": "C",
+          "period": "$period"
+        },
+        {
+          "dimensions": {
+            "InstanceId": "*"
+          },
+          "namespace": "AWS/EC2",
+          "metricName": "NetworkOut",
+          "region": "$region",
+          "statistics": [
+            "Average"
+          ],
+          "refId": "D",
+          "period": "$period"
+        }
+      ],
+      "title": "Network Traffic",
+      "type": "gauge"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "hiddenSeries": false,
+      "id": 5,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "sort": "avg",
+        "sortDesc": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "connected",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "",
+          "dimensions": {
+            "InstanceId": "*"
+          },
+          "expression": "",
+          "id": "",
+          "matchExact": true,
+          "metricName": "CPUUtilization",
+          "namespace": "AWS/EC2",
+          "period": "$period",
+          "refId": "E",
+          "region": "$region",
+          "statistics": [
+            "Maximum"
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "CPU utilization per instance [max %]",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": null,
+          "format": "percent",
+          "label": "",
+          "logBase": 1,
+          "max": "100",
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 21,
+  "style": "dark",
+  "tags": [
+    "Amazon",
+    "AWS",
+    "CloudWatch",
+    "EC2"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "default",
+          "value": "default"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Data source",
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "cloudwatch",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "$datasource",
+        "definition": "regions()",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Region",
+        "multi": false,
+        "name": "region",
+        "options": [],
+        "query": "regions()",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "tags": [],
+          "text": "300",
+          "value": "300"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Period [sec]",
+        "multi": false,
+        "name": "period",
+        "options": [
+          {
+            "selected": false,
+            "text": "60",
+            "value": "60"
+          },
+          {
+            "selected": true,
+            "text": "300",
+            "value": "300"
+          },
+          {
+            "selected": false,
+            "text": "3600",
+            "value": "3600"
+          }
+        ],
+        "query": "60,300,3600",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "",
+  "title": "Amazon EC2",
+  "uid": "tmsOtSxZk",
+  "version": 1
+}
