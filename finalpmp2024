@@ -1,0 +1,15 @@
+Here’s the final combined list of your achievements for your year-end review:
+
+- **CFS1 Migration Planning:** Provided critical support and insight during CFS1 migration planning meetings by documenting the application characterization with NIT and ADTs, ensuring smooth transition and compliance with organizational standards.
+
+- **Security Vulnerability Remediation:** Played a key role in researching, investigating, and remediating security vulnerabilities as part of the TIGER team, while also guiding and mentoring team members in their efforts to enhance security protocols.
+
+- **Service Control Policies Leadership:** Took the lead in creating additional service control policies for the AWS master account, successfully enhancing the security posture by disabling destructive actions in child accounts and strategically balancing security requirements with operational needs.
+
+- **Permissions Boundary Development:** Drafted and proposed permissions boundaries for deployment roles to secure the environment, effectively reducing the risk of destructive actions and safeguarding core infrastructure services from potential internal exploitation.
+
+- **Collaborative Security Review:** Actively collaborated with the Security team, providing critical feedback and advocating for necessary operational capabilities, while pushing back on forced suggestions to ensure a balanced approach between security and cloud operations.
+
+- **Security Monitoring Collaboration:** Collaborated with the Security team to enhance monitoring setup across accounts by identifying key APIs for triggering alerts, ensuring timely detection of out-of-change window actions by privileged access roles in Master and production accounts.
+
+- **Cloud Operations Support:** Actively contributed to resolving, debugging, and providing insights on cloud-related issues, playing a pivotal role in troubleshooting and maintaining seamless cloud operations.
