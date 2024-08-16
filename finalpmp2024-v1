@@ -1,0 +1,24 @@
+Here’s your updated combined list of accomplishments and expected year-end achievements:
+
+- **CFS1 Migration Planning:** Provided critical support and insight during CFS1 migration planning meetings by documenting the application characterization with NIT and ADTs, ensuring smooth transition and compliance with organizational standards.
+
+- **Security Vulnerability Remediation:** Played a key role in researching, investigating, and remediating security vulnerabilities as part of the TIGER team, while also guiding and mentoring team members in their efforts to enhance security protocols.
+
+- **Service Control Policies Leadership:** Took the lead in creating additional service control policies for the AWS master account, successfully enhancing the security posture by disabling destructive actions in child accounts and strategically balancing security requirements with operational needs.
+
+- **Permissions Boundary Development:** Drafted and proposed permissions boundaries for deployment roles to secure the environment, effectively reducing the risk of destructive actions and safeguarding core infrastructure services from potential internal exploitation.
+
+- **Collaborative Security Review:** Actively collaborated with the Security team, providing critical feedback and advocating for necessary operational capabilities, while pushing back on forced suggestions to ensure a balanced approach between security and cloud operations.
+
+- **Security Monitoring Collaboration:** Worked with the Security team to enhance monitoring setup across accounts by identifying key APIs for triggering alerts, ensuring timely detection of out-of-change window actions by privileged access roles in Master and production accounts.
+
+- **Cloud Operations Support:** Actively contributed to resolving, debugging, and providing insights on cloud-related issues, playing a pivotal role in troubleshooting and maintaining seamless cloud operations.
+
+- **Salesforce POC Integration:** Assisted ADTs with the Salesforce POC integration with Bloomreach by implementing AWS changes and managing multiple deployments during testing in the development environment.
+
+- **Solutions Architect Support:** Collaborated with Solutions Architects to address queries about existing setup and configuration for SRAP and LZ requests for the CFS1 migration.
+
+**Expected by Year-End:**
+- **Grafana Standardization:** Developing standardized Grafana templates to create dashboards and a single pane of glass view for AWS infrastructure metrics and thresholds across landing zones within the Business Unit.
+  
+- **CFS1 Migration Support:** Continuing to support CFS1 migration efforts, closely working with CES and assisting ADTs with logging and monitoring for applications.
