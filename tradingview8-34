@@ -1,0 +1,96 @@
+//@version=5
+strategy("Scalping Strategy with Risk Management, Alerts, and Stats Table", overlay=true, default_qty_type=strategy.fixed)
+
+// Parameters
+emaShortLength = input.int(8, title="Short EMA Length")
+emaLongLength = input.int(34, title="Long EMA Length")
+trailStopPoints = input.int(50, title="Trailing Stop (Points)")
+riskPerTrade = input.float(1, title="Risk per Trade (%)")
+tradeSession = input.session("0930-1600", title="Trading Session (EST)")
+contractValue = input.float(20, title="Contract Value (e.g., $20 per point for NQ)")
+showTable = input.bool(true, title="Show Stats Table")
+sessionEndHour = input.int(16, title="Session End Hour (EST)")
+sessionEndMinute = input.int(0, title="Session End Minute (EST)")
+
+// Indicators
+emaShort = ta.ema(close, emaShortLength)
+emaLongHigh = ta.ema(high, emaLongLength)
+emaLongLow = ta.ema(low, emaLongLength)
+atr = ta.atr(14)
+
+// Entry Conditions
+longCondition = ta.crossover(emaShort, emaLongHigh) and time(tradeSession)
+shortCondition = ta.crossunder(emaShort, emaLongLow) and time(tradeSession)
+
+// Swing High and Low for Stop Loss
+var float swingLow = na
+var float swingHigh = na
+
+if (longCondition)
+    swingLow := ta.lowest(low, 20)
+    
+if (shortCondition)
+    swingHigh := ta.highest(high, 20)
+
+// Calculate risk per contract (Stop loss distance * contract value)
+riskPerContract = atr * contractValue
+
+// Calculate number of contracts to trade
+riskAmount = strategy.equity * (riskPerTrade / 100)
+contracts = math.floor(riskAmount / riskPerContract)
+
+// Buy and Sell Entries
+if (contracts > 0)
+    if (longCondition)
+        strategy.entry("Long", strategy.long, qty=contracts)
+        alert("Buy Signal: 8 EMA Crossed Above 34 EMA High", alert.freq_once_per_bar_close)
+
+    if (shortCondition)
+        strategy.entry("Short", strategy.short, qty=contracts)
+        alert("Sell Signal: 8 EMA Crossed Below 34 EMA Low", alert.freq_once_per_bar_close)
+
+// Exit Logic with Trailing Stop
+if (longCondition)
+    strategy.exit("Exit Long", "Long", stop=swingLow, trail_offset=trailStopPoints * syminfo.mintick)
+    alert("Exit Long Position", alert.freq_once_per_bar_close)
+
+if (shortCondition)
+    strategy.exit("Exit Short", "Short", stop=swingHigh, trail_offset=trailStopPoints * syminfo.mintick)
+
+// Exit at Session End
+sessionEndTime = timestamp("GMT-5", year, month, dayofmonth, sessionEndHour, sessionEndMinute)
+
+if (time >= sessionEndTime and strategy.opentrades > 0)
+    strategy.close_all()
+    alert("All Positions Closed at Session End", alert.freq_once_per_bar_close)
+
+// Plot Buy and Sell Labels on Chart
+plotshape(series=longCondition, title="Buy Signal", location=location.belowbar, color=color.green, style=shape.labelup, text="BUY")
+plotshape(series=shortCondition, title="Sell Signal", location=location.abovebar, color=color.red, style=shape.labeldown, text="SELL")
+
+// Plot Exit Labels on Chart
+plotshape(series=strategy.closedtrades.exit_type == strategy.exit, title="Exit Signal", location=location.belowbar, color=color.orange, style=shape.labeldown, text="EXIT")
+
+// Stats Table Setup
+var table statsTable = table.new(position.top_right, 5, 2, border_width=1, border_color=color.gray, frame_color=color.gray, bgcolor=color.black)
+
+if showTable
+    // Update Table Data
+    table.cell(statsTable, 0, 0, "Metric", bgcolor=color.gray, text_color=color.white)
+    table.cell(statsTable, 0, 1, "Value", bgcolor=color.gray, text_color=color.white)
+
+    table.cell(statsTable, 1, 0, "Entry Price", text_color=color.white)
+    table.cell(statsTable, 1, 1, tostring(strategy.opentrades.entry_price(0)), text_color=color.white)
+
+    table.cell(statsTable, 2, 0, "Position Size", text_color=color.white)
+    table.cell(statsTable, 2, 1, tostring(contracts), text_color=color.white)
+
+    table.cell(statsTable, 3, 0, "Profit/Loss", text_color=color.white)
+    table.cell(statsTable, 3, 1, tostring(strategy.opentrades.profit(0)), text_color=color.white)
+
+    table.cell(statsTable, 4, 0, "Total Trades", text_color=color.white)
+    table.cell(statsTable, 4, 1, tostring(strategy.closedtrades), text_color=color.white)
+
+    table.cell(statsTable, 5, 0, "Win Rate", text_color=color.white)
+    winRate = strategy.winrate
+    table.cell(statsTable, 5, 1, tostring(winRate) + "%", text_color=color.white)
