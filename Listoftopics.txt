@@ -1,0 +1,93 @@
+Here is a list of AWS services to focus on for interview questions:
+
+1. **Compute:**
+   - EC2 (Elastic Compute Cloud)
+   - Lambda
+   - ECS (Elastic Container Service)
+   - EKS (Elastic Kubernetes Service)
+   - AWS Batch
+   - Elastic Beanstalk
+
+2. **Storage:**
+   - S3 (Simple Storage Service)
+   - EBS (Elastic Block Store)
+   - Glacier
+   - FSx
+   - EFS (Elastic File System)
+   - Storage Gateway
+
+3. **Networking:**
+   - VPC (Virtual Private Cloud)
+   - Route 53
+   - CloudFront
+   - ELB (Elastic Load Balancing)
+   - Direct Connect
+   - VPN
+   - Transit Gateway
+   - Global Accelerator
+
+4. **Database:**
+   - RDS (Relational Database Service)
+   - DynamoDB
+   - Aurora
+   - Redshift
+   - DocumentDB
+   - ElastiCache
+
+5. **Security and Identity:**
+   - IAM (Identity and Access Management)
+   - AWS Shield
+   - AWS WAF (Web Application Firewall)
+   - GuardDuty
+   - Security Hub
+   - Macie
+   - KMS (Key Management Service)
+   - AWS Certificate Manager (ACM)
+
+6. **Management and Governance:**
+   - CloudWatch
+   - CloudTrail
+   - AWS Config
+   - Systems Manager (SSM)
+   - Trusted Advisor
+   - Control Tower
+   - Organizations
+   - Service Catalog
+
+7. **Developer Tools:**
+   - CodeBuild
+   - CodeDeploy
+   - CodePipeline
+   - CodeCommit
+   - CodeArtifact
+
+8. **Analytics:**
+   - Athena
+   - EMR (Elastic MapReduce)
+   - Glue
+   - Kinesis
+   - QuickSight
+
+9. **Migration and Transfer:**
+   - DMS (Database Migration Service)
+   - AWS DataSync
+   - Snowball
+   - AWS Transfer Family
+
+10. **Machine Learning:**
+    - SageMaker
+    - Comprehend
+    - Rekognition
+    - Lex
+
+11. **Containers:**
+    - ECR (Elastic Container Registry)
+    - Fargate
+    - App Runner
+
+12. **Cost Management:**
+    - AWS Budgets
+    - Cost Explorer
+    - AWS Savings Plans
+
+This list will allow you to craft questions that assess candidates' depth and breadth of knowledge across key AWS services.
