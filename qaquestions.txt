@@ -1,0 +1,14 @@
+Here’s a revised version of the questions without mentioning company names:
+
+1. **How did you ensure smooth collaboration between multiple teams and vendors in your most recent role?**
+2. **Can you explain how you implemented the shift-left testing approach and how it improved defect detection in your projects?**
+3. **What were the key automation frameworks you trained delivery teams on, and how did that impact manual testing?**
+4. **In your previous role, how did you manage the transition from manual to automated testing? What were the biggest challenges?**
+5. **How did you foster a QA Community of Practice, and what was the impact on knowledge sharing and best practices?**
+6. **Can you walk us through a large-scale testing effort you coordinated in your past experience?**
+7. **What strategies did you use to ensure defect-free releases while working in an Agile environment?**
+8. **How did you manage automation tools like Selenium, Cucumber, and TestNG across different projects?**
+9. **What was your approach to reducing manual testing and improving automation in your recent work?**
+10. **How did your earlier experience as a consultant help shape your approach to managing testing projects in later roles?**
+
+These questions are still directly related to the candidate’s experience but without specific company names.
